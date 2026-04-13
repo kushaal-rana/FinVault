@@ -52,8 +52,6 @@ export function BottomNav() {
         Settings
       </NavLink>
 
-      {/* Spacer to balance the center button */}
-      <div className="flex-1" />
     </nav>
   )
 }

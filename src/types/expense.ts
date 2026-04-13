@@ -8,7 +8,6 @@ export const CATEGORY_KEYS = [
   'rental_insurance',
   'electricity',
   'subscription',
-  'scooter',
   'stocks',
   'other',
 ] as const

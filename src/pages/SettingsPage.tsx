@@ -18,40 +18,37 @@ export function SettingsPage() {
   const { data: allocations, isLoading } = useBucketAllocations(activeMonth)
   const queryClientInstance = useQueryClient()
 
-  const [amounts, setAmounts] = useState<Record<BucketKey, string>>(() => {
-    const defaults: Partial<Record<BucketKey, string>> = {}
+  const [amounts, setAmounts] = useState<Record<string, string>>(() => {
+    const defaults: Record<string, string> = {}
     BUCKET_ORDER.forEach((key) => { defaults[key] = '' })
-    defaults['buffer'] = ''
-    return defaults as Record<BucketKey, string>
+    return defaults
   })
 
-  const allBuckets: BucketKey[] = [...BUCKET_ORDER, 'buffer']
-
-  // Populate form when data loads
+  // Populate form when data loads — only the 6 editable buckets
   useEffect(() => {
     if (!allocations) return
-    const map: Partial<Record<BucketKey, string>> = {}
+    const map: Record<string, string> = {}
     allocations.forEach((a) => {
-      map[a.bucket as BucketKey] = String(a.amount)
+      if (a.bucket !== 'buffer') map[a.bucket] = String(a.amount)
     })
-    // Fill any missing buckets with empty string
-    allBuckets.forEach((key) => {
+    BUCKET_ORDER.forEach((key) => {
       if (!(key in map)) map[key] = ''
     })
-    setAmounts(map as Record<BucketKey, string>)
+    setAmounts(map)
   }, [allocations])
 
-  const totalAllocated = allBuckets.reduce((sum, key) => {
+  const totalAllocated = BUCKET_ORDER.reduce((sum, key) => {
     const val = parseFloat(amounts[key] || '0')
     return sum + (isNaN(val) ? 0 : val)
   }, 0)
 
-  const isOverBudget = totalAllocated > DEFAULT_MONTHLY_INCOME
-  const remaining = DEFAULT_MONTHLY_INCOME - totalAllocated
+  // Buffer = whatever income hasn't been allocated to the 6 buckets
+  const bufferAmount = DEFAULT_MONTHLY_INCOME - totalAllocated
+  const isOverBudget = bufferAmount < 0
 
   const saveMutation = useMutation({
     mutationFn: () => {
-      const payload = allBuckets.map((bucket) => ({
+      const payload = BUCKET_ORDER.map((bucket) => ({
         month: activeMonth,
         bucket,
         amount: parseFloat(amounts[bucket] || '0') || 0,
@@ -98,7 +95,7 @@ export function SettingsPage() {
           <div className="p-8 text-center text-sm text-muted-foreground">Loading…</div>
         ) : (
           <div className="divide-y">
-            {allBuckets.map((key) => {
+            {BUCKET_ORDER.map((key) => {
               const config = BUCKET_CONFIG[key]
               const val = parseFloat(amounts[key] || '0') || 0
               const pct = DEFAULT_MONTHLY_INCOME > 0 ? (val / DEFAULT_MONTHLY_INCOME) * 100 : 0
@@ -128,6 +125,26 @@ export function SettingsPage() {
                 </div>
               )
             })}
+
+            {/* Buffer — read-only, auto-calculated as income minus all allocations */}
+            <div className="flex items-center gap-4 px-4 py-3 bg-muted/20">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <span className="text-lg leading-none">{BUCKET_CONFIG.buffer.icon}</span>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium truncate text-muted-foreground">Buffer (auto)</p>
+                  <p className="text-xs text-muted-foreground truncate">Whatever's left unallocated</p>
+                </div>
+              </div>
+              <span className={`text-xs font-medium tabular-nums w-12 text-right shrink-0 ${isOverBudget ? 'text-destructive' : 'text-muted-foreground'}`}>
+                {bufferAmount !== 0 ? `${Math.abs((bufferAmount / DEFAULT_MONTHLY_INCOME) * 100).toFixed(1)}%` : '—'}
+              </span>
+              <div className="w-28 shrink-0 px-3 h-8 flex items-center rounded-md border bg-muted/50">
+                <span className="text-sm text-muted-foreground mr-1">$</span>
+                <span className={`text-sm font-medium tabular-nums ${isOverBudget ? 'text-destructive' : 'text-foreground'}`}>
+                  {bufferAmount.toFixed(2)}
+                </span>
+              </div>
+            </div>
           </div>
         )}
 
@@ -144,11 +161,11 @@ export function SettingsPage() {
           {isOverBudget ? (
             <div className="flex items-center gap-1.5 mt-2 text-destructive">
               <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-              <span className="text-xs">Over budget by {formatCurrency(totalAllocated - DEFAULT_MONTHLY_INCOME)}</span>
+              <span className="text-xs">Over-allocated by {formatCurrency(Math.abs(bufferAmount))}</span>
             </div>
           ) : (
             <p className="text-xs text-muted-foreground mt-1">
-              {remaining > 0 ? `${formatCurrency(remaining)} unallocated` : 'Fully allocated'}
+              {bufferAmount > 0 ? `${formatCurrency(bufferAmount)} goes to buffer` : 'Fully allocated'}
             </p>
           )}
         </div>

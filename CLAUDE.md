@@ -55,7 +55,7 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 
 ---
 
-## Current Build Status — SESSION 2 UPDATE
+## Current Build Status — SESSION 3 UPDATE
 
 ### ✅ Fully Complete (builds cleanly — `npm run build` passes with zero errors)
 
@@ -88,24 +88,28 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 - `src/pages/LoginPage.tsx` — password login + magic link toggle
 - `src/pages/DashboardPage.tsx` — full dashboard wired to hooks
 - `src/pages/ExpensesPage.tsx` — filters, table/list, edit + delete dialogs
-- `src/pages/SettingsPage.tsx` — per-bucket allocation editor with live %, over-budget warning
+- `src/pages/SettingsPage.tsx` — 6 editable buckets (BUCKET_ORDER only) with live % per bucket; Buffer row is **read-only, auto-calculated** as `$8,000 - sum(6 bucket allocations)`, shown in muted style, never saved to DB
 
 **Navigation**
 - `src/components/nav/Sidebar.tsx`
 - `src/components/nav/TopBar.tsx` — passes `expenseFilters.bucket` to `openAddExpense()` (bucket pre-selection fix)
-- `src/components/nav/BottomNav.tsx` — passes `expenseFilters.bucket` to `openAddExpense()` (bucket pre-selection fix)
+- `src/components/nav/BottomNav.tsx` — passes `expenseFilters.bucket` to `openAddExpense()` (bucket pre-selection fix); exactly 4 `flex-1` items (Dashboard, Expenses, +, Settings) — extra spacer div removed
 
 **Dashboard components**
-- `IncomeHeader.tsx` — dark gradient card; currently shows `buffer.allocated - buffer.spent` as "Buffer remaining" — **⚠️ PENDING CHANGE: should show `$8,000 - totalSpent` as "Remaining" instead** (discussed with Kushaal, agreed it's more useful)
+- `IncomeHeader.tsx` — dark gradient card; shows `$8,000 - totalSpent` as **"Remaining"** (live, auto-calculated). Buffer allocation row removed from this component entirely.
 - `BucketCard.tsx` — clickable, navigates to /expenses with bucket pre-filtered via `setExpenseFilters`
 - `BucketGrid.tsx`, `BucketProgressBar.tsx`, `RecentExpenses.tsx`
+- Buffer card intentionally absent from BucketGrid — `BUCKET_ORDER` never includes `'buffer'`
 
 **Chart components**
-- `DonutSummary.tsx`, `SpendingPieChart.tsx`, `MonthlyBarChart.tsx`
+- `DonutSummary.tsx` — spent vs remaining donut (total)
+- `SpendingPieChart.tsx` — breakdown by bucket (different purpose, not redundant)
+- `MonthlyBarChart.tsx` — 6-month stacked bar trend
 
 **Add Expense (modal + sheet)**
 - `AddExpenseForm.tsx` — **Split type divides by 3 automatically**: label changes to "Total bill amount", shows live "Your share: $X.XX (÷3 ways)" preview, stores divided amount. Applies to Wi-Fi, utilities, electricity (always split 3 ways with roommates). `SPLIT_WAYS = 3` constant at top of file.
-- `AddExpenseModal.tsx` (desktop dialog), `AddExpenseSheet.tsx` (mobile vaul drawer)
+- `AddExpenseModal.tsx` (desktop dialog)
+- `AddExpenseSheet.tsx` (mobile vaul drawer) — `max-h-[92svh]` so sheet hugs content height, no empty space below button. `overflow-y-auto` on inner div only, NOT on `Drawer.Content`
 
 **Expense components**
 - `ExpenseFilters.tsx` — month picker + bucket/category/type selects + clear filters
@@ -125,14 +129,6 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 
 ## 🔲 PENDING — To-Do Before Production
 
-### Must Fix (bugs / UX issues agreed upon)
-
-1. **`IncomeHeader.tsx` — "Buffer remaining" → "Remaining"**
-   - Currently: shows `buffer.allocated - buffer.spent` = always $1,079 if no Buffer expenses logged
-   - Should be: `DEFAULT_MONTHLY_INCOME - totalSpent` = actual unspent income this month
-   - Rename label from "Buffer remaining" to "Remaining" or "Left to spend"
-   - The buffer bucket's own remaining is already visible in the BucketGrid card below
-
 ### Testing Checklist (ongoing before pushing to production)
 
 - [ ] Login flow — password login works, magic link works, redirects correctly
@@ -145,11 +141,14 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 - [ ] Filters — bucket/category/type filters work, clear filters resets
 - [ ] Bucket pre-selection — clicking Must card on dashboard → Add Expense defaults to Must
 - [ ] Month navigation — changing month updates dashboard, expense list, settings all in sync
+- [ ] Settings — Buffer row auto-calculates correctly as 6-bucket allocations change
 - [ ] Settings — saving allocations upserts to Supabase, dashboard refreshes
 - [ ] Charts — donut, pie, bar chart render with real data
-- [ ] Mobile — bottom sheet opens, BottomNav visible, card list renders
+- [ ] Mobile — bottom sheet hugs content (no empty space below button), BottomNav 4 items evenly spaced
+- [ ] Mobile — form inside sheet scrolls internally, drag-to-close still works
 - [ ] Total row — expense table footer shows correct sum
 - [ ] Percentages — settings page shows correct % per bucket (e.g. Must $2,021 = 25.3%)
+- [ ] IncomeHeader — "Remaining" shows `$8,000 - totalSpent` live
 - [ ] Empty state — shows when no expenses for month/filter combo
 
 ### Polish (nice-to-have before deploy)
@@ -180,8 +179,8 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 3. **`user_id` injected in service layer** from `supabase.auth.getUser()` — NEVER from form input
 4. **No backend server** — Supabase client calls directly from React, protected by RLS
 5. **activeMonth in Zustand** (not URL params) — resets to current month on refresh (acceptable)
-6. **`buffer` is a 7th pseudo-bucket** — not one of the 6 PMDSPM buckets but tracked for completeness
-7. **Add Expense is modal on desktop / bottom sheet on mobile** — `useIsMobile()` hook
+6. **`buffer` is auto-calculated, never manually entered** — Buffer = `$8,000 - sum(6 bucket allocations)` in Settings (read-only row). In IncomeHeader, Remaining = `$8,000 - totalSpent`. Buffer is NOT in BUCKET_ORDER and has no BucketCard on dashboard. Users never log expenses against the buffer bucket.
+7. **Add Expense is modal on desktop / bottom sheet on mobile** — `useIsMobile()` hook. Sheet uses `max-h-[92svh]` to hug content, inner div handles overflow scroll.
 8. **Monthly allocations auto-seed** — `getAllocationsByMonth` seeds from `DEFAULT_MONTHLY_ALLOCATIONS` if month has no data
 9. **Split expenses always divide by 3** — Kushaal splits Wi-Fi, utilities, electricity with 2 roommates. `SPLIT_WAYS = 3` in `AddExpenseForm.tsx` and `EditExpenseDialog.tsx`. Store the user's share, not the full bill.
 10. **Bucket pre-selection in Add Expense** — `openAddExpense(expenseFilters.bucket ?? undefined)` in both TopBar and BottomNav so clicking a bucket card pre-selects it in the form
@@ -200,7 +199,8 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 `passive_income | must | desire | self_pampering | personal_growth | make_a_difference | buffer`
 
 ### Category enum values
-`groceries | rent | wifi | utilities | rental_insurance | electricity | subscription | scooter | stocks | other`
+`groceries | rent | wifi | utilities | rental_insurance | electricity | subscription | stocks | other`
+Note: `scooter` was removed from CATEGORY_KEYS and CATEGORY_LABELS. Existing DB rows tagged scooter still exist but are no longer selectable.
 
 ### Expense type values
 `own | split | pending`

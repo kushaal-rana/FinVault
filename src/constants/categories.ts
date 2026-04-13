@@ -8,7 +8,6 @@ export const CATEGORY_LABELS: Record<CategoryKey, string> = {
   rental_insurance: 'Rental Insurance',
   electricity: 'Electricity',
   subscription: 'Subscription',
-  scooter: 'Scooter',
   stocks: 'Stocks',
   other: 'Other',
 }

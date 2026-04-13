@@ -12,11 +12,11 @@ export function AddExpenseSheet({ open, onClose }: AddExpenseSheetProps) {
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
-      <SheetContent className="max-h-[92svh] overflow-y-auto">
+      <SheetContent className="max-h-[92svh] flex flex-col">
         <SheetHeader>
           <SheetTitle>Log Expense</SheetTitle>
         </SheetHeader>
-        <div className="p-4 pb-8">
+        <div className="overflow-y-auto p-4 pb-10">
           <AddExpenseForm onSuccess={onClose} defaultBucket={defaultBucket} />
         </div>
       </SheetContent>

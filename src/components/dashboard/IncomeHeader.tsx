@@ -12,13 +12,7 @@ interface IncomeHeaderProps {
 
 export function IncomeHeader({ month, summaries, isLoading }: IncomeHeaderProps) {
   const totalSpent = summaries.reduce((sum, s) => sum + s.spent, 0)
-  const totalAllocated = summaries.reduce((sum, s) => sum + s.allocated, 0)
-  const buffer = totalAllocated > 0
-    ? summaries.find((s) => s.bucket === 'buffer')
-    : null
-  const bufferAllocated = buffer?.allocated ?? 0
-  const bufferSpent = buffer?.spent ?? 0
-  const bufferRemaining = bufferAllocated - bufferSpent
+  const remaining = DEFAULT_MONTHLY_INCOME - totalSpent
   const overallPercent = DEFAULT_MONTHLY_INCOME > 0 ? Math.round((totalSpent / DEFAULT_MONTHLY_INCOME) * 100) : 0
 
   if (isLoading) {
@@ -43,8 +37,8 @@ export function IncomeHeader({ month, summaries, isLoading }: IncomeHeaderProps)
             </div>
           </div>
           <div className="text-right">
-            <p className="text-slate-400 text-xs mb-1">Buffer remaining</p>
-            <p className="text-xl font-bold tabular-nums">{formatCurrency(bufferRemaining)}</p>
+            <p className="text-slate-400 text-xs mb-1">Remaining</p>
+            <p className="text-xl font-bold tabular-nums">{formatCurrency(remaining)}</p>
             <p className="text-slate-400 text-xs">{overallPercent}% of income used</p>
           </div>
         </div>
