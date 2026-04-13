@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Read(//Users/kushaalrana/.nvm/**)",
+      "Bash(brew list:*)",
+      "Read(//usr/local/bin/**)",
+      "Read(//opt/homebrew/bin/**)",
+      "Bash(npx shadcn-ui@latest init --defaults)",
+      "Bash(npx shadcn@latest init --defaults)"
+    ]
+  }
+}
