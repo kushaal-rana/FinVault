@@ -13,14 +13,17 @@ export function BucketBadge({ bucket, size = 'md', className }: BucketBadgeProps
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full font-medium',
-        size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-2.5 py-1 text-xs',
-        config.lightBg,
-        config.textColor,
+        'inline-flex items-center justify-center gap-1 rounded-full font-medium whitespace-nowrap shrink-0',
+        size === 'sm' ? 'px-2.5 py-0.5 text-xs min-w-[88px]' : 'px-3 py-1 text-xs min-w-[96px]',
         className
       )}
+      style={{
+        backgroundColor: `${config.color}22`,
+        color: config.color,
+        border: `1px solid ${config.color}44`,
+      }}
     >
-      <span>{config.icon}</span>
+      <span className="text-[11px] leading-none">{config.icon}</span>
       {config.shortLabel}
     </span>
   )

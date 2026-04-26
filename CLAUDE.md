@@ -55,7 +55,7 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 
 ---
 
-## Current Build Status — SESSION 3 UPDATE
+## Current Build Status — SESSION 4 UPDATE
 
 ### ✅ Fully Complete (builds cleanly — `npm run build` passes with zero errors)
 
@@ -65,6 +65,7 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 - `vercel.json` — SPA rewrites + security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy)
 - `.env.local` — Real Supabase credentials present (URL + anon key for project `iriwtvpcetbkmhdffufx`)
 - `src/App.css` — **DELETED** (was default Vite scaffold, never used)
+- `index.html` — inline script before React boots applies `dark` class from `localStorage` to prevent flash-of-wrong-theme. Title updated to "PMDSPM Tracker".
 
 **Types / Constants / Lib / Stores / Services / Hooks — all done**
 - `src/types/` — bucket.ts, expense.ts, allocation.ts, index.ts
@@ -200,7 +201,7 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 
 ### Category enum values
 `groceries | rent | wifi | utilities | rental_insurance | electricity | subscription | stocks | other`
-Note: `scooter` was removed from CATEGORY_KEYS and CATEGORY_LABELS. Existing DB rows tagged scooter still exist but are no longer selectable.
+Note: `scooter` was removed from CATEGORY_KEYS and CATEGORY_LABELS. Existing DB rows tagged scooter still exist but are no longer selectable. Remind the user(kushaal) to remove it from the db as well
 
 ### Expense type values
 `own | split | pending`

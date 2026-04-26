@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, ListFilter, Settings, LogOut, Plus } from 'lucide-react'
+import { LayoutDashboard, ListFilter, Settings, LogOut, Plus, Sun, Moon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/hooks/useAuth'
 import { useUIStore } from '@/store/uiStore'
+import { useTheme } from '@/hooks/useTheme'
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard', end: true },
@@ -15,6 +16,7 @@ const navItems = [
 export function Sidebar() {
   const { signOut } = useAuth()
   const { openAddExpense } = useUIStore()
+  const { isDark, toggle } = useTheme()
 
   return (
     <aside className="flex h-screen w-60 flex-col border-r bg-card px-3 py-4 sticky top-0">
@@ -56,8 +58,15 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* Sign out */}
+      {/* Theme + Sign out */}
       <Separator className="mb-3" />
+      <button
+        onClick={toggle}
+        className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors w-full mb-1"
+      >
+        {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        {isDark ? 'Light mode' : 'Dark mode'}
+      </button>
       <button
         onClick={signOut}
         className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors w-full"

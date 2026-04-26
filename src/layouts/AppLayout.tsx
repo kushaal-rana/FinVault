@@ -6,7 +6,6 @@ import { AddExpenseModal } from '@/components/add-expense/AddExpenseModal'
 import { AddExpenseSheet } from '@/components/add-expense/AddExpenseSheet'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useUIStore } from '@/store/uiStore'
-import { Toaster } from 'sonner'
 
 export function AppLayout() {
   const isMobile = useIsMobile()
@@ -33,7 +32,6 @@ export function AppLayout() {
         <AddExpenseModal open={isAddExpenseOpen} onClose={closeAddExpense} />
       )}
 
-      <Toaster richColors position="top-right" />
     </div>
   )
 }
