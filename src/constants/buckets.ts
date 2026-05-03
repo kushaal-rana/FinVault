@@ -96,14 +96,4 @@ export const BUCKET_ORDER: BucketKey[] = [
   'passive_income',
 ]
 
-export const DEFAULT_MONTHLY_ALLOCATIONS: Record<BucketKey, number> = {
-  must: 2021,
-  desire: 1000,
-  self_pampering: 60,
-  personal_growth: 20,
-  make_a_difference: 20,
-  passive_income: 3800,
-  buffer: 1079,
-}
-
-export const DEFAULT_MONTHLY_INCOME = 8000
+export const DEFAULT_MONTHLY_INCOME = 10000

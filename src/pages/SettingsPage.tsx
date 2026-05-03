@@ -12,13 +12,65 @@ import { Input } from '@/components/ui/input'
 import { MonthPicker } from '@/components/shared/MonthPicker'
 import { formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
-import { AlertTriangle, Save } from 'lucide-react'
+import { AlertTriangle, Save, KeyRound, User } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
+import { getProfile, updateProfile } from '@/services/profiles.service'
 import type { BucketKey } from '@/types'
 
 export function SettingsPage() {
   const { activeMonth, setActiveMonth } = useUIStore()
   const { signOut } = useAuth()
   const { user } = useAuthStore()
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [nameSaving, setNameSaving] = useState(false)
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [passwordSaving, setPasswordSaving] = useState(false)
+
+  useEffect(() => {
+    getProfile().then((profile) => {
+      if (!profile?.full_name) return
+      const parts = profile.full_name.trim().split(' ')
+      setFirstName(parts[0] ?? '')
+      setLastName(parts.slice(1).join(' ') ?? '')
+    })
+  }, [])
+
+  async function handleSaveName() {
+    const full_name = `${firstName.trim()} ${lastName.trim()}`.trim()
+    if (!full_name) return
+    setNameSaving(true)
+    try {
+      await updateProfile({ full_name })
+      toast.success('Name saved')
+    } catch {
+      toast.error('Failed to save name')
+    } finally {
+      setNameSaving(false)
+    }
+  }
+
+  async function handleSetPassword() {
+    if (newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters')
+      return
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error('Passwords do not match')
+      return
+    }
+    setPasswordSaving(true)
+    const { error } = await supabase.auth.updateUser({ password: newPassword })
+    setPasswordSaving(false)
+    if (error) {
+      toast.error('Failed to set password')
+    } else {
+      toast.success('Password updated')
+      setNewPassword('')
+      setConfirmPassword('')
+    }
+  }
   const { data: allocations, isLoading } = useBucketAllocations(activeMonth)
   const queryClientInstance = useQueryClient()
 
@@ -87,15 +139,92 @@ export function SettingsPage() {
       <div className="rounded-lg border bg-card p-4 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
           <div className="h-9 w-9 rounded-full bg-indigo-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
-            {user?.email?.[0].toUpperCase() ?? '?'}
+            {firstName ? firstName[0].toUpperCase() : (user?.email?.[0].toUpperCase() ?? '?')}
           </div>
           <div className="min-w-0">
-            <p className="text-xs text-muted-foreground">Signed in as</p>
-            <p className="text-sm font-medium truncate">{user?.email ?? '—'}</p>
+            {firstName && (
+              <p className="text-sm font-medium truncate">{`${firstName} ${lastName}`.trim()}</p>
+            )}
+            <p className={`truncate ${firstName ? 'text-xs text-muted-foreground' : 'text-sm font-medium'}`}>
+              {user?.email ?? '—'}
+            </p>
           </div>
         </div>
         <Button variant="outline" size="sm" onClick={signOut}>
           Sign out
+        </Button>
+      </div>
+
+      {/* Name */}
+      <div className="rounded-lg border bg-card p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <User className="h-4 w-4 text-muted-foreground" />
+          <p className="text-sm font-medium">Display name</p>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-1">
+            <label className="text-xs text-muted-foreground">First name</label>
+            <Input
+              type="text"
+              placeholder="First name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="h-8 text-sm"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs text-muted-foreground">Last name</label>
+            <Input
+              type="text"
+              placeholder="Last name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="h-8 text-sm"
+            />
+          </div>
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleSaveName}
+          disabled={nameSaving || !firstName.trim()}
+        >
+          {nameSaving ? 'Saving…' : 'Save name'}
+        </Button>
+      </div>
+
+      {/* Set / change password */}
+      <div className="rounded-lg border bg-card p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <KeyRound className="h-4 w-4 text-muted-foreground" />
+          <p className="text-sm font-medium">Password</p>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Set a password so you can sign in with email + password from any device, without needing a magic link each time.
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          <Input
+            type="password"
+            placeholder="New password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className="h-8 text-sm"
+          />
+          <Input
+            type="password"
+            placeholder="Confirm password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="h-8 text-sm"
+          />
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleSetPassword}
+          disabled={passwordSaving || !newPassword}
+        >
+          {passwordSaving ? 'Saving…' : 'Update password'}
         </Button>
       </div>
 
