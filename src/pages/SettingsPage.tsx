@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useBucketAllocations } from '@/hooks/useBucketAllocations'
 import { useUIStore } from '@/store/uiStore'
+import { useAuth } from '@/hooks/useAuth'
+import { useAuthStore } from '@/store/authStore'
 import { upsertAllocations } from '@/services/allocations.service'
 import { queryKeys } from '@/lib/queryClient'
 import { BUCKET_CONFIG, BUCKET_ORDER, DEFAULT_MONTHLY_INCOME } from '@/constants/buckets'
@@ -15,6 +17,8 @@ import type { BucketKey } from '@/types'
 
 export function SettingsPage() {
   const { activeMonth, setActiveMonth } = useUIStore()
+  const { signOut } = useAuth()
+  const { user } = useAuthStore()
   const { data: allocations, isLoading } = useBucketAllocations(activeMonth)
   const queryClientInstance = useQueryClient()
 
@@ -77,6 +81,22 @@ export function SettingsPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
         <p className="text-sm text-muted-foreground mt-0.5">Manage your monthly bucket allocations</p>
+      </div>
+
+      {/* Account info */}
+      <div className="rounded-lg border bg-card p-4 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="h-9 w-9 rounded-full bg-indigo-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+            {user?.email?.[0].toUpperCase() ?? '?'}
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs text-muted-foreground">Signed in as</p>
+            <p className="text-sm font-medium truncate">{user?.email ?? '—'}</p>
+          </div>
+        </div>
+        <Button variant="outline" size="sm" onClick={signOut}>
+          Sign out
+        </Button>
       </div>
 
       <div className="flex items-center gap-3">

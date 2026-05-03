@@ -13,8 +13,16 @@ function AuthBootstrap({ children }: { children: React.ReactNode }) {
   const { setSession, setLoading } = useAuthStore()
 
   useEffect(() => {
-    // Hydrate session on mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Hydrate from cache, then verify with server (getSession is cache-only)
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session) {
+        const { error } = await supabase.auth.getUser()
+        if (error) {
+          await supabase.auth.signOut()
+          setSession(null)
+          return
+        }
+      }
       setSession(session)
     })
 
