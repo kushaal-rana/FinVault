@@ -11,14 +11,14 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 **The 6 Buckets (PMDSPM):**
 | Letter | Bucket | Kushaal's Monthly Amount |
 |---|---|---|
-| P | Passive Income | $3,800 (VTI, QQQM, India stocks) |
-| M | Must Expenses | $2,021 (rent $1,734, wifi, electricity, utilities, groceries, gym, insurance) |
-| D | Desire | $1,000 (car fund — saving toward $10K milestone) |
-| S | Self Pampering | $60 (small treats) |
-| P | Personal Growth | $20 (Claude Code subscription only — frozen) |
-| M | Make a Difference | $20 (giving) |
-| — | Buffer | $1,079 (travel + opportunity fund) |
-| **Total** | | **$8,000/month net** |
+| P | Passive Income  |
+| M | Must Expenses |(rent wifi, electricity, utilities, groceries, gym, insurance) |
+| D | Desire |  (car fund — saving toward $50K milestone) |
+| S | Self Pampering |  (small treats) |
+| P | Personal Growth |  (Claude Code subscription only — frozen) |
+| M | Make a Difference |  (giving) |
+| — | Buffer |  (travel + opportunity fund) |
+| **Total** | | **$XXXXX/month net** |
 
 **Why this app exists:** Rich visual analytics (progress bars, pie charts, 6-month bar charts), cross-device access (phone, home laptop, office laptop) via Supabase backend.
 
@@ -63,13 +63,13 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 - `vite.config.ts`, `tailwind.config.ts`, `postcss.config.js`, `tsconfig.app.json`
 - `src/vite-env.d.ts` — Vite env type declarations for `import.meta.env`
 - `vercel.json` — SPA rewrites + security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy)
-- `.env.local` — Real Supabase credentials present (URL + anon key for project `iriwtvpcetbkmhdffufx`)
+- `.env.local` — Real Supabase credentials present (URL + anon key for project ``)
 - `src/App.css` — **DELETED** (was default Vite scaffold, never used)
 - `index.html` — inline script before React boots applies `dark` class from `localStorage` to prevent flash-of-wrong-theme. Title updated to "PMDSPM Tracker".
 
 **Types / Constants / Lib / Stores / Services / Hooks — all done**
 - `src/types/` — bucket.ts, expense.ts, allocation.ts, index.ts
-- `src/constants/` — buckets.ts (BUCKET_CONFIG, BUCKET_ORDER, DEFAULT_MONTHLY_ALLOCATIONS, DEFAULT_MONTHLY_INCOME=8000), categories.ts
+- `src/constants/` — buckets.ts (BUCKET_CONFIG, BUCKET_ORDER, DEFAULT_MONTHLY_ALLOCATIONS, DEFAULT_MONTHLY_INCOME=X000), categories.ts
 - `src/lib/` — supabase.ts, queryClient.ts, utils.ts
 - `src/store/` — authStore.ts, uiStore.ts
 - `src/services/` — auth.service.ts, expenses.service.ts (includes `updateExpense`), allocations.service.ts
@@ -89,7 +89,7 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 - `src/pages/LoginPage.tsx` — password login + magic link toggle
 - `src/pages/DashboardPage.tsx` — full dashboard wired to hooks
 - `src/pages/ExpensesPage.tsx` — filters, table/list, edit + delete dialogs
-- `src/pages/SettingsPage.tsx` — 6 editable buckets (BUCKET_ORDER only) with live % per bucket; Buffer row is **read-only, auto-calculated** as `$8,000 - sum(6 bucket allocations)`, shown in muted style, never saved to DB
+- `src/pages/SettingsPage.tsx` — 6 editable buckets (BUCKET_ORDER only) with live % per bucket; Buffer row is **read-only, auto-calculated** as `$X,000 - sum(6 bucket allocations)`, shown in muted style, never saved to DB
 
 **Navigation**
 - `src/components/nav/Sidebar.tsx`
@@ -97,7 +97,7 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 - `src/components/nav/BottomNav.tsx` — passes `expenseFilters.bucket` to `openAddExpense()` (bucket pre-selection fix); exactly 4 `flex-1` items (Dashboard, Expenses, +, Settings) — extra spacer div removed
 
 **Dashboard components**
-- `IncomeHeader.tsx` — dark gradient card; shows `$8,000 - totalSpent` as **"Remaining"** (live, auto-calculated). Buffer allocation row removed from this component entirely.
+- `IncomeHeader.tsx` — dark gradient card; shows `$X,000 - totalSpent` as **"Remaining"** (live, auto-calculated). Buffer allocation row removed from this component entirely.
 - `BucketCard.tsx` — clickable, navigates to /expenses with bucket pre-filtered via `setExpenseFilters`
 - `BucketGrid.tsx`, `BucketProgressBar.tsx`, `RecentExpenses.tsx`
 - Buffer card intentionally absent from BucketGrid — `BUCKET_ORDER` never includes `'buffer'`
@@ -139,7 +139,7 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 - [ ] Edit expense — pre-fills correctly; split expenses show original total (stored × 3)
 - [ ] Edit expense — saving updates DB, dashboard and expense list refresh
 - [ ] Delete expense — soft delete (deleted_at set, not hard delete), list refreshes
-- [ ] Filters — bucket/category/type filters work, clear filters resets
+- [ ] Filters — bucket/category/type filters work, clear filters $
 - [ ] Bucket pre-selection — clicking Must card on dashboard → Add Expense defaults to Must
 - [ ] Month navigation — changing month updates dashboard, expense list, settings all in sync
 - [ ] Settings — Buffer row auto-calculates correctly as 6-bucket allocations change
@@ -148,8 +148,8 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 - [ ] Mobile — bottom sheet hugs content (no empty space below button), BottomNav 4 items evenly spaced
 - [ ] Mobile — form inside sheet scrolls internally, drag-to-close still works
 - [ ] Total row — expense table footer shows correct sum
-- [ ] Percentages — settings page shows correct % per bucket (e.g. Must $2,021 = 25.3%)
-- [ ] IncomeHeader — "Remaining" shows `$8,000 - totalSpent` live
+- [ ] Percentages — settings page shows correct % per bucket 
+- [ ] IncomeHeader — "Remaining" shows `$0,000 - totalSpent` live
 - [ ] Empty state — shows when no expenses for month/filter combo
 
 ### Polish (nice-to-have before deploy)
@@ -180,7 +180,7 @@ A personal budget tracking web app for **Kushaal Rana** built around the **PMDSP
 3. **`user_id` injected in service layer** from `supabase.auth.getUser()` — NEVER from form input
 4. **No backend server** — Supabase client calls directly from React, protected by RLS
 5. **activeMonth in Zustand** (not URL params) — resets to current month on refresh (acceptable)
-6. **`buffer` is auto-calculated, never manually entered** — Buffer = `$8,000 - sum(6 bucket allocations)` in Settings (read-only row). In IncomeHeader, Remaining = `$8,000 - totalSpent`. Buffer is NOT in BUCKET_ORDER and has no BucketCard on dashboard. Users never log expenses against the buffer bucket.
+6. **`buffer` is auto-calculated, never manually entered** — Buffer = `$X,000 - sum(6 bucket allocations)` in Settings (read-only row). In IncomeHeader, Remaining = `$X,000 - totalSpent`. Buffer is NOT in BUCKET_ORDER and has no BucketCard on dashboard. Users never log expenses against the buffer bucket.
 7. **Add Expense is modal on desktop / bottom sheet on mobile** — `useIsMobile()` hook. Sheet uses `max-h-[92svh]` to hug content, inner div handles overflow scroll.
 8. **Monthly allocations auto-seed** — `getAllocationsByMonth` seeds from `DEFAULT_MONTHLY_ALLOCATIONS` if month has no data
 9. **Split expenses always divide by 3** — Kushaal splits Wi-Fi, utilities, electricity with 2 roommates. `SPLIT_WAYS = 3` in `AddExpenseForm.tsx` and `EditExpenseDialog.tsx`. Store the user's share, not the full bill.
@@ -213,8 +213,8 @@ Note: `scooter` was removed from CATEGORY_KEYS and CATEGORY_LABELS. Existing DB 
 
 ## Supabase Setup (Already Done)
 
-- Project: `kushaal-money-tracker`, ID: `iriwtvpcetbkmhdffufx`
-- URL: `https://iriwtvpcetbkmhdffufx.supabase.co`
+- Project: `kushaal-money-tracker`, ID: ``
+- URL: 
 - Credentials in `.env.local` ✅
 - Schema migrations run ✅
 - RLS policies active ✅
@@ -266,12 +266,5 @@ npm run build
 ## About Kushaal (Context for Personalization)
 
 - Software engineer at Google, Santa Clara
-- STEM OPT visa till Feb 2028 — prefers used car under $20K
-- Uses Robinhood for US stocks (VTI + QQQM fixed monthly), Upstox for India stocks (opportunistic)
-- India stock target: ₹1 Cr portfolio in 3-4 years
-- Car fund: $3,000 already saved, targeting $10,000 by November 2026
-- Emergency fund: $7,000 — already set, do not touch
-- Google provides free lunch + dinner — only cooks/orders Fri/Sat/Sun
 - PMDSPM taught by his financial coach Mitesh
-- Splits Wi-Fi, utilities, electricity 3 ways with roommates (always ÷3)
 - This app should eventually be scalable to SaaS (multi-user)
