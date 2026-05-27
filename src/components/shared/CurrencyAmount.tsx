@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { formatCurrency } from '@/lib/utils'
+import { useCurrency } from '@/hooks/useCurrency'
 
 interface CurrencyAmountProps {
   amount: number
@@ -9,6 +9,8 @@ interface CurrencyAmountProps {
 }
 
 export function CurrencyAmount({ amount, className, size = 'md', muted }: CurrencyAmountProps) {
+  const { format } = useCurrency()
+
   const sizeClasses = {
     sm: 'text-sm',
     md: 'text-base',
@@ -25,7 +27,7 @@ export function CurrencyAmount({ amount, className, size = 'md', muted }: Curren
         className
       )}
     >
-      {formatCurrency(amount)}
+      {format(amount)}
     </span>
   )
 }

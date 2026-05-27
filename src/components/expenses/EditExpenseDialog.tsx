@@ -13,7 +13,8 @@ import { CATEGORY_LABELS, EXPENSE_TYPE_LABELS } from '@/constants/categories'
 import { CATEGORY_KEYS, EXPENSE_TYPE_KEYS } from '@/types'
 import { useUpdateExpense } from '@/hooks/useUpdateExpense'
 import { useUIStore } from '@/store/uiStore'
-import { dateToMonth, formatCurrency } from '@/lib/utils'
+import { useCurrency } from '@/hooks/useCurrency'
+import { dateToMonth } from '@/lib/utils'
 import type { Expense, BucketKey, CategoryKey, ExpenseType } from '@/types'
 
 const SPLIT_WAYS = 3
@@ -38,6 +39,7 @@ interface EditExpenseDialogProps {
 export function EditExpenseDialog({ expense, onClose }: EditExpenseDialogProps) {
   const { activeMonth } = useUIStore()
   const updateMutation = useUpdateExpense(activeMonth)
+  const { format, symbol, toStorage, toDisplay } = useCurrency()
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -48,9 +50,10 @@ export function EditExpenseDialog({ expense, onClose }: EditExpenseDialogProps) 
     if (!expense) return
     reset({
       // For split expenses, show the stored share × 3 so the user sees the original total
+      // Convert stored USD to display currency first
       amount: expense.expense_type === 'split'
-        ? Math.round(expense.amount * SPLIT_WAYS * 100) / 100
-        : expense.amount,
+        ? Math.round(toDisplay(expense.amount) * SPLIT_WAYS * 100) / 100
+        : toDisplay(expense.amount),
       description: expense.description,
       bucket: expense.bucket,
       category: expense.category,
@@ -71,9 +74,12 @@ export function EditExpenseDialog({ expense, onClose }: EditExpenseDialogProps) 
   async function onSubmit(values: FormValues) {
     if (!expense) return
     try {
+      // Convert from display currency to USD for storage
+      const amountInUSD = toStorage(values.amount)
+
       const storedAmount = values.expense_type === 'split'
-        ? Math.round((values.amount / SPLIT_WAYS) * 100) / 100
-        : values.amount
+        ? Math.round((amountInUSD / SPLIT_WAYS) * 100) / 100
+        : amountInUSD
 
       await updateMutation.mutateAsync({
         id: expense.id,
@@ -106,7 +112,7 @@ export function EditExpenseDialog({ expense, onClose }: EditExpenseDialogProps) 
           <div className="space-y-1.5">
             <Label htmlFor="edit-amount">{isSplit ? 'Total bill amount' : 'Amount'}</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">{symbol}</span>
               <Input
                 id="edit-amount"
                 type="number"
@@ -118,7 +124,7 @@ export function EditExpenseDialog({ expense, onClose }: EditExpenseDialogProps) 
             </div>
             {isSplit && yourShare !== null && (
               <p className="text-xs text-muted-foreground">
-                Your share: <span className="font-semibold text-foreground">{formatCurrency(yourShare)}</span>
+                Your share: <span className="font-semibold text-foreground">{format(toStorage(yourShare))}</span>
                 <span className="ml-1">(÷{SPLIT_WAYS} ways)</span>
               </p>
             )}

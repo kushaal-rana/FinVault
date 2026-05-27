@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { format } from 'date-fns'
+import { format as formatDateFns } from 'date-fns'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,7 +11,8 @@ import { BUCKET_CONFIG, BUCKET_ORDER } from '@/constants/buckets'
 import { CATEGORY_LABELS, EXPENSE_TYPE_LABELS } from '@/constants/categories'
 import { CATEGORY_KEYS, EXPENSE_TYPE_KEYS } from '@/types'
 import { useAddExpense } from '@/hooks/useAddExpense'
-import { dateToMonth, formatCurrency } from '@/lib/utils'
+import { useCurrency } from '@/hooks/useCurrency'
+import { dateToMonth } from '@/lib/utils'
 import type { BucketKey, CategoryKey, ExpenseType } from '@/types'
 
 // Split bills are always divided 3 ways (Wi-Fi, utilities, electricity)
@@ -36,6 +37,7 @@ interface AddExpenseFormProps {
 
 export function AddExpenseForm({ onSuccess, defaultBucket }: AddExpenseFormProps) {
   const addExpense = useAddExpense()
+  const { format, symbol, toStorage } = useCurrency()
 
   const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -45,7 +47,7 @@ export function AddExpenseForm({ onSuccess, defaultBucket }: AddExpenseFormProps
       bucket: defaultBucket ?? 'must',
       category: 'other',
       expense_type: 'own',
-      date: format(new Date(), 'yyyy-MM-dd'),
+      date: formatDateFns(new Date(), 'yyyy-MM-dd'),
     },
   })
 
@@ -59,10 +61,13 @@ export function AddExpenseForm({ onSuccess, defaultBucket }: AddExpenseFormProps
 
   async function onSubmit(values: FormValues) {
     try {
+      // Convert from display currency to USD for storage
+      const amountInUSD = toStorage(values.amount)
+
       // For split expenses, store the user's share (total ÷ 3), not the full bill
       const storedAmount = values.expense_type === 'split'
-        ? Math.round((values.amount / SPLIT_WAYS) * 100) / 100
-        : values.amount
+        ? Math.round((amountInUSD / SPLIT_WAYS) * 100) / 100
+        : amountInUSD
 
       await addExpense.mutateAsync({
         ...values,
@@ -86,7 +91,7 @@ export function AddExpenseForm({ onSuccess, defaultBucket }: AddExpenseFormProps
       <div className="space-y-1.5">
         <Label htmlFor="amount">{isSplit ? 'Total bill amount' : 'Amount'}</Label>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">$</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">{symbol}</span>
           <Input
             id="amount"
             type="number"
@@ -98,7 +103,7 @@ export function AddExpenseForm({ onSuccess, defaultBucket }: AddExpenseFormProps
         </div>
         {isSplit && yourShare !== null && (
           <p className="text-xs text-muted-foreground">
-            Your share: <span className="font-semibold text-foreground">{formatCurrency(yourShare)}</span>
+            Your share: <span className="font-semibold text-foreground">{format(toStorage(yourShare))}</span>
             <span className="ml-1">(÷{SPLIT_WAYS} ways)</span>
           </p>
         )}
@@ -187,7 +192,7 @@ export function AddExpenseForm({ onSuccess, defaultBucket }: AddExpenseFormProps
         {isSubmitting
           ? 'Adding...'
           : isSplit && yourShare !== null
-            ? `Add expense — ${formatCurrency(yourShare)}`
+            ? `Add expense — ${format(toStorage(yourShare))}`
             : 'Add Expense'}
       </Button>
     </form>

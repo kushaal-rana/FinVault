@@ -1,5 +1,5 @@
 import { ExpenseRow } from './ExpenseRow'
-import { formatCurrency } from '@/lib/utils'
+import { useCurrency } from '@/hooks/useCurrency'
 import type { Expense } from '@/types'
 
 interface ExpenseTableProps {
@@ -9,6 +9,7 @@ interface ExpenseTableProps {
 }
 
 export function ExpenseTable({ expenses, onDelete, onEdit }: ExpenseTableProps) {
+  const { format } = useCurrency()
   const total = expenses.reduce((sum, e) => sum + e.amount, 0)
 
   return (
@@ -36,7 +37,7 @@ export function ExpenseTable({ expenses, onDelete, onEdit }: ExpenseTableProps) 
               Total · {expenses.length} expense{expenses.length !== 1 ? 's' : ''}
             </td>
             <td className="py-3 px-4 text-right text-sm font-bold tabular-nums">
-              {formatCurrency(total)}
+              {format(total)}
             </td>
             <td />
           </tr>

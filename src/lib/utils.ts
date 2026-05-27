@@ -6,13 +6,57 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
+import type { CurrencyCode } from '@/types'
+
+export function formatCurrency(
+  amount: number,
+  currency: CurrencyCode = 'USD',
+  exchangeRate: number = 95.67
+): string {
+  const displayAmount = currency === 'INR' ? amount * exchangeRate : amount
+  return formatCurrencyRaw(displayAmount, currency)
+}
+
+/** Format a number that is ALREADY in the target currency — no conversion */
+export function formatCurrencyRaw(
+  amount: number,
+  currency: CurrencyCode = 'USD'
+): string {
+  const locale = currency === 'INR' ? 'en-IN' : 'en-US'
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: 'USD',
+    currency,
     minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
+    maximumFractionDigits: currency === 'INR' ? 0 : 2,
   }).format(amount)
+}
+
+/** Convert user-entered amount to USD for Supabase storage */
+export function toStorageAmount(
+  enteredAmount: number,
+  currency: CurrencyCode,
+  exchangeRate: number
+): number {
+  if (currency === 'INR') {
+    return Math.round((enteredAmount / exchangeRate) * 100) / 100
+  }
+  return enteredAmount
+}
+
+/** Convert stored USD amount to display currency (raw number, no formatting) */
+export function toDisplayAmount(
+  storedAmount: number,
+  currency: CurrencyCode,
+  exchangeRate: number
+): number {
+  if (currency === 'INR') {
+    return Math.round(storedAmount * exchangeRate * 100) / 100
+  }
+  return storedAmount
+}
+
+export function getCurrencySymbol(currency: CurrencyCode = 'USD'): string {
+  return currency === 'INR' ? '₹' : '$'
 }
 
 export function formatDate(dateStr: string): string {

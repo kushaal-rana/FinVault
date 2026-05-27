@@ -96,4 +96,3 @@ export const BUCKET_ORDER: BucketKey[] = [
   'passive_income',
 ]
 
-export const DEFAULT_MONTHLY_INCOME = 10000

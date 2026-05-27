@@ -2,7 +2,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { BUCKET_CONFIG } from '@/constants/buckets'
-import { formatCurrency } from '@/lib/utils'
+import { useCurrency } from '@/hooks/useCurrency'
 import { ChartTooltip } from './ChartTooltip'
 import type { BucketSummary } from '@/types'
 
@@ -12,6 +12,7 @@ interface SpendingPieChartProps {
 }
 
 export function SpendingPieChart({ summaries, isLoading }: SpendingPieChartProps) {
+  const { format } = useCurrency()
   const data = summaries
     .filter((s) => s.spent > 0)
     .map((s) => ({
@@ -60,7 +61,7 @@ export function SpendingPieChart({ summaries, isLoading }: SpendingPieChartProps
             <div key={entry.name} className="flex items-center gap-1.5 text-xs">
               <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: entry.color }} />
               <span className="text-muted-foreground truncate">{entry.name}</span>
-              <span className="ml-auto font-medium tabular-nums">{formatCurrency(entry.value)}</span>
+              <span className="ml-auto font-medium tabular-nums">{format(entry.value)}</span>
             </div>
           ))}
         </div>

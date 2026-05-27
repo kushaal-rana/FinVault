@@ -5,9 +5,11 @@ import { BUCKET_CONFIG, BUCKET_ORDER } from '@/constants/buckets'
 import { getShortMonthLabel } from '@/lib/utils'
 import { useLast6MonthsTotals } from '@/hooks/useLast6MonthsTotals'
 import { ChartTooltip } from './ChartTooltip'
+import { useCurrency } from '@/hooks/useCurrency'
 import type { BucketKey } from '@/types'
 
 export function MonthlyBarChart() {
+  const { symbol } = useCurrency()
   const { data: result, isLoading } = useLast6MonthsTotals()
 
   if (isLoading) return <Skeleton className="h-64 rounded-xl" />
@@ -53,7 +55,7 @@ export function MonthlyBarChart() {
                   tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
                   axisLine={false}
                   tickLine={false}
-                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                  tickFormatter={(v) => `${symbol}${(v / 1000).toFixed(0)}k`}
                 />
                 <Tooltip content={<ChartTooltip />} cursor={{ fill: 'hsl(var(--muted))', opacity: 0.5 }} />
                 {BUCKET_ORDER.map((bucket: BucketKey) => (

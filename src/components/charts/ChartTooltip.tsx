@@ -1,4 +1,4 @@
-import { formatCurrency } from '@/lib/utils'
+import { useCurrency } from '@/hooks/useCurrency'
 
 interface ChartTooltipProps {
   active?: boolean
@@ -7,6 +7,7 @@ interface ChartTooltipProps {
 }
 
 export function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
+  const { format } = useCurrency()
   if (!active || !payload?.length) return null
 
   return (
@@ -16,7 +17,7 @@ export function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
         <div key={entry.name} className="flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: entry.color }} />
           <span className="text-muted-foreground capitalize">{entry.name.replace(/_/g, ' ')}</span>
-          <span className="ml-auto pl-4 font-semibold tabular-nums">{formatCurrency(entry.value)}</span>
+          <span className="ml-auto pl-4 font-semibold tabular-nums">{format(entry.value)}</span>
         </div>
       ))}
     </div>

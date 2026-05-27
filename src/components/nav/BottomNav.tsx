@@ -7,51 +7,52 @@ export function BottomNav() {
   const { openAddExpense, expenseFilters } = useUIStore()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center border-t bg-background/95 backdrop-blur px-2 safe-area-pb">
-      <NavLink
-        to="/"
-        end
-        className={({ isActive }) =>
-          cn('flex flex-1 flex-col items-center gap-1 py-2 text-xs font-medium transition-colors',
-            isActive ? 'text-primary' : 'text-muted-foreground')
-        }
+    <>
+      {/* Floating Add button — sits ABOVE the nav bar (no overlap), centered */}
+      <button
+        onClick={() => openAddExpense(expenseFilters.bucket ?? undefined)}
+        className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xl shadow-black/25 transition-transform active:scale-95"
+        aria-label="Add expense"
       >
-        <LayoutDashboard className="h-5 w-5" />
-        Dashboard
-      </NavLink>
+        <Plus className="h-6 w-6" />
+      </button>
 
-      <NavLink
-        to="/expenses"
-        className={({ isActive }) =>
-          cn('flex flex-1 flex-col items-center gap-1 py-2 text-xs font-medium transition-colors',
-            isActive ? 'text-primary' : 'text-muted-foreground')
-        }
-      >
-        <ListFilter className="h-5 w-5" />
-        Expenses
-      </NavLink>
-
-      {/* Center Add button */}
-      <div className="flex flex-1 justify-center">
-        <button
-          onClick={() => openAddExpense(expenseFilters.bucket ?? undefined)}
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:scale-95"
+      {/* Bottom nav — 3 evenly-spaced tabs */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center border-t bg-background/95 backdrop-blur safe-area-pb">
+        <NavLink
+          to="/"
+          end
+          className={({ isActive }) =>
+            cn('flex flex-1 flex-col items-center gap-1 py-2 text-xs font-medium transition-colors',
+              isActive ? 'text-primary' : 'text-muted-foreground')
+          }
         >
-          <Plus className="h-6 w-6" />
-        </button>
-      </div>
+          <LayoutDashboard className="h-5 w-5" />
+          Dashboard
+        </NavLink>
 
-      <NavLink
-        to="/settings"
-        className={({ isActive }) =>
-          cn('flex flex-1 flex-col items-center gap-1 py-2 text-xs font-medium transition-colors',
-            isActive ? 'text-primary' : 'text-muted-foreground')
-        }
-      >
-        <Settings className="h-5 w-5" />
-        Settings
-      </NavLink>
+        <NavLink
+          to="/expenses"
+          className={({ isActive }) =>
+            cn('flex flex-1 flex-col items-center gap-1 py-2 text-xs font-medium transition-colors',
+              isActive ? 'text-primary' : 'text-muted-foreground')
+          }
+        >
+          <ListFilter className="h-5 w-5" />
+          Expenses
+        </NavLink>
 
-    </nav>
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            cn('flex flex-1 flex-col items-center gap-1 py-2 text-xs font-medium transition-colors',
+              isActive ? 'text-primary' : 'text-muted-foreground')
+          }
+        >
+          <Settings className="h-5 w-5" />
+          Settings
+        </NavLink>
+      </nav>
+    </>
   )
 }

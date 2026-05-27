@@ -10,3 +10,4 @@ export type {
 } from './expense'
 export { CATEGORY_KEYS, EXPENSE_TYPE_KEYS } from './expense'
 export type { BucketAllocation, AllocationUpsert } from './allocation'
+export type { CurrencyCode } from './currency'

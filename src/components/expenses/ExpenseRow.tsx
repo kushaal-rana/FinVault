@@ -1,7 +1,8 @@
 import { Trash2, Pencil } from 'lucide-react'
 import { BucketBadge } from '@/components/shared/BucketBadge'
 import { CategoryBadge } from '@/components/shared/CategoryBadge'
-import { formatCurrency, formatShortDate } from '@/lib/utils'
+import { formatShortDate } from '@/lib/utils'
+import { useCurrency } from '@/hooks/useCurrency'
 import { EXPENSE_TYPE_LABELS } from '@/constants/categories'
 import { cn } from '@/lib/utils'
 import { BUCKET_CONFIG } from '@/constants/buckets'
@@ -15,6 +16,7 @@ interface ExpenseRowProps {
 }
 
 export function ExpenseRow({ expense, onDelete, onEdit, variant }: ExpenseRowProps) {
+  const { format } = useCurrency()
   const bucketColor = BUCKET_CONFIG[expense.bucket]?.color ?? '#64748b'
 
   if (variant === 'card') {
@@ -39,7 +41,7 @@ export function ExpenseRow({ expense, onDelete, onEdit, variant }: ExpenseRowPro
           </div>
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          <span className="text-sm font-semibold tabular-nums mr-1">{formatCurrency(expense.amount)}</span>
+          <span className="text-sm font-semibold tabular-nums mr-1">{format(expense.amount)}</span>
           <button
             onClick={() => onEdit(expense)}
             className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded"
@@ -88,7 +90,7 @@ export function ExpenseRow({ expense, onDelete, onEdit, variant }: ExpenseRowPro
         </span>
       </td>
       <td className="py-3 px-4 text-right">
-        <span className="text-sm font-semibold tabular-nums">{formatCurrency(expense.amount)}</span>
+        <span className="text-sm font-semibold tabular-nums">{format(expense.amount)}</span>
       </td>
       <td className="py-3 px-4">
         <div className="flex items-center gap-1">

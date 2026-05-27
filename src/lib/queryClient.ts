@@ -25,4 +25,5 @@ export const queryKeys = {
   },
   monthlyTotals: (month: string) => ['monthly-totals', month] as const,
   last6MonthsTotals: ['last-6-months-totals'] as const,
+  profile: ['profile'] as const,
 }

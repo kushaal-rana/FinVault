@@ -13,11 +13,13 @@ interface UIState {
   isAddExpenseOpen: boolean
   defaultBucket: BucketKey | null
   expenseFilters: ExpenseFiltersState
+  sidebarCollapsed: boolean
   setActiveMonth: (month: string) => void
   openAddExpense: (defaultBucket?: BucketKey) => void
   closeAddExpense: () => void
   setExpenseFilters: (filters: Partial<ExpenseFiltersState>) => void
   resetExpenseFilters: () => void
+  toggleSidebar: () => void
 }
 
 const defaultFilters: ExpenseFiltersState = {
@@ -26,11 +28,22 @@ const defaultFilters: ExpenseFiltersState = {
   expense_type: null,
 }
 
+const SIDEBAR_KEY = 'pmdspm-sidebar-collapsed'
+
+function loadSidebar(): boolean {
+  try {
+    return localStorage.getItem(SIDEBAR_KEY) === 'true'
+  } catch {
+    return false
+  }
+}
+
 export const useUIStore = create<UIState>((set) => ({
   activeMonth: getCurrentMonth(),
   isAddExpenseOpen: false,
   defaultBucket: null,
   expenseFilters: defaultFilters,
+  sidebarCollapsed: loadSidebar(),
 
   setActiveMonth: (month) => set({ activeMonth: month }),
 
@@ -46,4 +59,11 @@ export const useUIStore = create<UIState>((set) => ({
     })),
 
   resetExpenseFilters: () => set({ expenseFilters: defaultFilters }),
+
+  toggleSidebar: () =>
+    set((state) => {
+      const next = !state.sidebarCollapsed
+      try { localStorage.setItem(SIDEBAR_KEY, String(next)) } catch { /* noop */ }
+      return { sidebarCollapsed: next }
+    }),
 }))

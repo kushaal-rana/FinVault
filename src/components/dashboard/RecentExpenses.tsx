@@ -3,7 +3,8 @@ import { ArrowRight } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { BucketBadge } from '@/components/shared/BucketBadge'
-import { formatCurrency, formatShortDate } from '@/lib/utils'
+import { formatShortDate } from '@/lib/utils'
+import { useCurrency } from '@/hooks/useCurrency'
 import { useRecentExpenses } from '@/hooks/useExpenses'
 
 interface RecentExpensesProps {
@@ -11,6 +12,7 @@ interface RecentExpensesProps {
 }
 
 export function RecentExpenses({ month }: RecentExpensesProps) {
+  const { format } = useCurrency()
   const { data: expenses, isLoading } = useRecentExpenses(month)
 
   return (
@@ -48,7 +50,7 @@ export function RecentExpenses({ month }: RecentExpensesProps) {
                   </div>
                 </div>
                 <span className="text-sm font-semibold tabular-nums shrink-0 ml-3">
-                  {formatCurrency(expense.amount)}
+                  {format(expense.amount)}
                 </span>
               </div>
             ))}

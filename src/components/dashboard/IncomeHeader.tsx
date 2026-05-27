@@ -1,5 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card'
-import { formatCurrency, getMonthLabel } from '@/lib/utils'
+import { getMonthLabel } from '@/lib/utils'
+import { useCurrency } from '@/hooks/useCurrency'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { BucketSummary } from '@/types'
 
@@ -10,6 +11,7 @@ interface IncomeHeaderProps {
 }
 
 export function IncomeHeader({ month, summaries, isLoading }: IncomeHeaderProps) {
+  const { format } = useCurrency()
   const totalIncome = summaries.reduce((sum, s) => sum + s.allocated, 0)
   const totalSpent = summaries.reduce((sum, s) => sum + s.spent, 0)
   const remaining = totalIncome - totalSpent
@@ -40,8 +42,8 @@ export function IncomeHeader({ month, summaries, isLoading }: IncomeHeaderProps)
           <div>
             <p className="text-slate-400 text-sm font-medium mb-1">{getMonthLabel(month)}</p>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold tabular-nums">{formatCurrency(totalSpent)}</span>
-              <span className="text-slate-400 text-sm">spent of {formatCurrency(totalIncome)}</span>
+              <span className="text-3xl font-bold tabular-nums">{format(totalSpent)}</span>
+              <span className="text-slate-400 text-sm">spent of {format(totalIncome)}</span>
             </div>
             <div className="mt-2 h-1.5 w-48 rounded-full bg-slate-700">
               <div
@@ -52,7 +54,7 @@ export function IncomeHeader({ month, summaries, isLoading }: IncomeHeaderProps)
           </div>
           <div className="text-right">
             <p className="text-slate-400 text-xs mb-1">Remaining</p>
-            <p className="text-xl font-bold tabular-nums">{formatCurrency(remaining)}</p>
+            <p className="text-xl font-bold tabular-nums">{format(remaining)}</p>
             <p className="text-slate-400 text-xs">{overallPercent}% of income used</p>
           </div>
         </div>

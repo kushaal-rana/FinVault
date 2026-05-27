@@ -5,6 +5,7 @@ export interface Profile {
   email: string
   full_name: string | null
   avatar_url: string | null
+  monthly_income: number
 }
 
 export async function getProfile(): Promise<Profile | null> {
@@ -13,7 +14,7 @@ export async function getProfile(): Promise<Profile | null> {
 
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, email, full_name, avatar_url')
+    .select('id, email, full_name, avatar_url, monthly_income')
     .eq('id', user.id)
     .single()
 
@@ -21,7 +22,7 @@ export async function getProfile(): Promise<Profile | null> {
   return data as Profile
 }
 
-export async function updateProfile(updates: { full_name?: string }): Promise<void> {
+export async function updateProfile(updates: { full_name?: string; monthly_income?: number }): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
 

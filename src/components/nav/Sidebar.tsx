@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, ListFilter, Settings, LogOut, Plus, Sun, Moon } from 'lucide-react'
+import { LayoutDashboard, ListFilter, Settings, LogOut, Plus, Sun, Moon, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -15,24 +15,52 @@ const navItems = [
 
 export function Sidebar() {
   const { signOut } = useAuth()
-  const { openAddExpense } = useUIStore()
+  const { openAddExpense, sidebarCollapsed, toggleSidebar } = useUIStore()
   const { isDark, toggle } = useTheme()
 
   return (
-    <aside className="flex h-screen w-60 flex-col border-r bg-card px-3 py-4 sticky top-0">
-      {/* Logo */}
-      <div className="flex items-center gap-2.5 px-2 mb-6">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-bold">
-          P
-        </div>
-        <span className="font-semibold text-sm">PMDSPM Tracker</span>
+    <aside
+      className={cn(
+        'flex h-screen flex-col border-r bg-card py-4 sticky top-0 transition-[width] duration-200',
+        sidebarCollapsed ? 'w-16 px-2' : 'w-60 px-3'
+      )}
+    >
+      {/* Logo + collapse toggle */}
+      <div className={cn('flex items-center mb-6', sidebarCollapsed ? 'justify-center' : 'justify-between px-2')}>
+        {!sidebarCollapsed && (
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-bold shrink-0">
+              P
+            </div>
+            <span className="font-semibold text-sm truncate">PMDSPM Tracker</span>
+          </div>
+        )}
+        <button
+          onClick={toggleSidebar}
+          className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors shrink-0"
+          aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {sidebarCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+        </button>
       </div>
 
       {/* Add Expense CTA */}
-      <Button className="mb-4 gap-2" onClick={() => openAddExpense()}>
-        <Plus className="h-4 w-4" />
-        Add Expense
-      </Button>
+      {sidebarCollapsed ? (
+        <button
+          onClick={() => openAddExpense()}
+          className="mb-4 mx-auto flex h-10 w-10 items-center justify-center rounded-md bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+          aria-label="Add expense"
+          title="Add expense"
+        >
+          <Plus className="h-4 w-4" />
+        </button>
+      ) : (
+        <Button className="mb-4 gap-2" onClick={() => openAddExpense()}>
+          <Plus className="h-4 w-4" />
+          Add Expense
+        </Button>
+      )}
 
       <Separator className="mb-4" />
 
@@ -43,17 +71,19 @@ export function Sidebar() {
             key={to}
             to={to}
             end={end}
+            title={sidebarCollapsed ? label : undefined}
             className={({ isActive }) =>
               cn(
-                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                'flex items-center rounded-md text-sm font-medium transition-colors',
+                sidebarCollapsed ? 'justify-center h-10 w-10 mx-auto' : 'gap-3 px-3 py-2',
                 isActive
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
               )
             }
           >
-            <Icon className="h-4 w-4" />
-            {label}
+            <Icon className="h-4 w-4 shrink-0" />
+            {!sidebarCollapsed && label}
           </NavLink>
         ))}
       </nav>
@@ -62,17 +92,25 @@ export function Sidebar() {
       <Separator className="mb-3" />
       <button
         onClick={toggle}
-        className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors w-full mb-1"
+        title={sidebarCollapsed ? (isDark ? 'Light mode' : 'Dark mode') : undefined}
+        className={cn(
+          'flex items-center rounded-md text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors mb-1',
+          sidebarCollapsed ? 'justify-center h-10 w-10 mx-auto' : 'gap-3 px-3 py-2 w-full'
+        )}
       >
-        {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-        {isDark ? 'Light mode' : 'Dark mode'}
+        {isDark ? <Sun className="h-4 w-4 shrink-0" /> : <Moon className="h-4 w-4 shrink-0" />}
+        {!sidebarCollapsed && (isDark ? 'Light mode' : 'Dark mode')}
       </button>
       <button
         onClick={signOut}
-        className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors w-full"
+        title={sidebarCollapsed ? 'Sign out' : undefined}
+        className={cn(
+          'flex items-center rounded-md text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors',
+          sidebarCollapsed ? 'justify-center h-10 w-10 mx-auto' : 'gap-3 px-3 py-2 w-full'
+        )}
       >
-        <LogOut className="h-4 w-4" />
-        Sign out
+        <LogOut className="h-4 w-4 shrink-0" />
+        {!sidebarCollapsed && 'Sign out'}
       </button>
     </aside>
   )

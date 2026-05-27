@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
 import { BucketProgressBar } from './BucketProgressBar'
 import { BUCKET_CONFIG } from '@/constants/buckets'
-import { formatCurrency } from '@/lib/utils'
+import { useCurrency } from '@/hooks/useCurrency'
 import { cn } from '@/lib/utils'
 import { useUIStore } from '@/store/uiStore'
 import type { BucketKey } from '@/types'
@@ -14,6 +14,7 @@ interface BucketCardProps {
 }
 
 export function BucketCard({ bucket, allocated, spent }: BucketCardProps) {
+  const { format } = useCurrency()
   const config = BUCKET_CONFIG[bucket]
   const remaining = allocated - spent
   const percent = allocated > 0 ? Math.min(Math.round((spent / allocated) * 100), 100) : 0
@@ -54,10 +55,10 @@ export function BucketCard({ bucket, allocated, spent }: BucketCardProps) {
         <div className="space-y-2">
           <BucketProgressBar spent={spent} allocated={allocated} color={config.color} />
           <div className="flex items-center justify-between text-xs">
-            <span className="tabular-nums font-semibold text-foreground">{formatCurrency(spent)} spent</span>
+            <span className="tabular-nums font-semibold text-foreground">{format(spent)} spent</span>
             <span className={cn('tabular-nums font-medium', isOver ? 'text-red-500' : 'text-muted-foreground')}>
-              {isOver ? `-${formatCurrency(Math.abs(remaining))} over` : `${formatCurrency(remaining)} left`}
-              {' / '}{formatCurrency(allocated)}
+              {isOver ? `-${format(Math.abs(remaining))} over` : `${format(remaining)} left`}
+              {' / '}{format(allocated)}
             </span>
           </div>
         </div>
