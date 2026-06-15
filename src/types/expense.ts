@@ -5,7 +5,7 @@ export const CATEGORY_KEYS = [
   'rent',
   'wifi',
   'utilities',
-  'rental_insurance',
+  'gym',
   'electricity',
   'subscription',
   'stocks',

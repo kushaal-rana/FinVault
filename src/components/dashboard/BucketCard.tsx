@@ -17,8 +17,10 @@ export function BucketCard({ bucket, allocated, spent }: BucketCardProps) {
   const { format } = useCurrency()
   const config = BUCKET_CONFIG[bucket]
   const remaining = allocated - spent
-  const percent = allocated > 0 ? Math.min(Math.round((spent / allocated) * 100), 100) : 0
+  const rawPercent = allocated > 0 ? (spent / allocated) * 100 : 0
+  const percent = Math.min(Math.round(rawPercent), 100)
   const isOver = spent > allocated
+  const isClose = rawPercent >= 90 && rawPercent <= 100
   const navigate = useNavigate()
   const { setExpenseFilters } = useUIStore()
 
@@ -46,7 +48,10 @@ export function BucketCard({ bucket, allocated, spent }: BucketCardProps) {
             <p className="text-xs text-muted-foreground">{config.description}</p>
           </div>
           <span
-            className={cn('text-xs font-bold tabular-nums', isOver ? 'text-red-500' : 'text-muted-foreground')}
+            className={cn(
+              'text-xs font-bold tabular-nums',
+              isOver ? 'text-red-500' : isClose ? 'text-amber-500' : 'text-muted-foreground'
+            )}
           >
             {percent}%
           </span>
@@ -56,7 +61,10 @@ export function BucketCard({ bucket, allocated, spent }: BucketCardProps) {
           <BucketProgressBar spent={spent} allocated={allocated} color={config.color} />
           <div className="flex items-center justify-between text-xs">
             <span className="tabular-nums font-semibold text-foreground">{format(spent)} spent</span>
-            <span className={cn('tabular-nums font-medium', isOver ? 'text-red-500' : 'text-muted-foreground')}>
+            <span className={cn(
+              'tabular-nums font-medium',
+              isOver ? 'text-red-500' : isClose ? 'text-amber-500' : 'text-muted-foreground'
+            )}>
               {isOver ? `-${format(Math.abs(remaining))} over` : `${format(remaining)} left`}
               {' / '}{format(allocated)}
             </span>

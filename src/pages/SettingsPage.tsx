@@ -9,7 +9,7 @@ import { queryKeys } from '@/lib/queryClient'
 import { BUCKET_CONFIG, BUCKET_ORDER } from '@/constants/buckets'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { MonthPicker } from '@/components/shared/MonthPicker'
+import { getMonthLabel } from '@/lib/utils'
 import { useCurrency } from '@/hooks/useCurrency'
 import { useProfile, useUpdateProfile } from '@/hooks/useProfile'
 import { toDisplayAmount } from '@/lib/utils'
@@ -19,7 +19,7 @@ import { supabase } from '@/lib/supabase'
 import type { BucketKey } from '@/types'
 
 export function SettingsPage() {
-  const { activeMonth, setActiveMonth } = useUIStore()
+  const { activeMonth } = useUIStore()
   const { signOut } = useAuth()
   const { user } = useAuthStore()
   const [firstName, setFirstName] = useState('')
@@ -243,7 +243,7 @@ export function SettingsPage() {
           <p className="text-sm font-medium">Password</p>
         </div>
         <p className="text-xs text-muted-foreground">
-          Set a password so you can sign in with email + password from any device, without needing a magic link each time.
+          Set a password so you can sign in with email + password — instead of using Google or a magic link each time.
         </p>
         <div className="grid grid-cols-2 gap-2">
           <Input
@@ -373,10 +373,10 @@ export function SettingsPage() {
         )}
       </div>
 
-      <div className="flex items-center gap-3">
-        <span className="text-sm font-medium text-muted-foreground">Editing allocations for</span>
-        <MonthPicker month={activeMonth} onChange={setActiveMonth} />
-      </div>
+      <p className="text-sm text-muted-foreground">
+        Editing allocations for <span className="font-semibold text-foreground">{getMonthLabel(activeMonth)}</span>
+        <span className="ml-2 text-xs">(use the month picker in the top bar to switch)</span>
+      </p>
 
       <div className="rounded-lg border bg-card overflow-hidden">
         <div className="px-4 py-3 border-b bg-muted/30">
@@ -435,7 +435,7 @@ export function SettingsPage() {
               <div className="w-28 shrink-0 px-3 h-8 flex items-center rounded-md border bg-muted/50">
                 <span className="text-sm text-muted-foreground mr-1">{symbol}</span>
                 <span className={`text-sm font-medium tabular-nums ${isOverBudget ? 'text-destructive' : 'text-foreground'}`}>
-                  {bufferAmount.toFixed(2)}
+                  {bufferAmount % 1 === 0 ? bufferAmount.toFixed(0) : bufferAmount.toFixed(2)}
                 </span>
               </div>
             </div>

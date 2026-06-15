@@ -57,7 +57,7 @@ export function MonthlyBarChart() {
                   tickLine={false}
                   tickFormatter={(v) => `${symbol}${(v / 1000).toFixed(0)}k`}
                 />
-                <Tooltip content={<ChartTooltip />} cursor={{ fill: 'hsl(var(--muted))', opacity: 0.5 }} />
+                <Tooltip content={<ChartTooltip showTotal />} cursor={{ fill: 'hsl(var(--muted))', opacity: 0.5 }} />
                 {BUCKET_ORDER.map((bucket: BucketKey) => (
                   <Bar
                     key={bucket}

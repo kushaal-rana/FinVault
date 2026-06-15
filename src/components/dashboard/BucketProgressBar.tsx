@@ -8,17 +8,19 @@ interface BucketProgressBarProps {
 }
 
 export function BucketProgressBar({ spent, allocated, color, className }: BucketProgressBarProps) {
-  const percent = allocated > 0 ? Math.min((spent / allocated) * 100, 100) : 0
-  const isWarning = percent >= 75 && percent < 90
-  const isDanger = percent >= 90
+  const rawPercent = allocated > 0 ? (spent / allocated) * 100 : 0
+  const barWidth = Math.min(rawPercent, 100)
+  // Amber when close to budget (90–100%), red only when truly over (>100%)
+  const isOver = rawPercent > 100
+  const isClose = rawPercent >= 90 && rawPercent <= 100
 
   return (
     <div className={cn('h-2 w-full rounded-full bg-secondary overflow-hidden', className)}>
       <div
         className="h-full rounded-full transition-all duration-700 ease-out"
         style={{
-          width: `${percent}%`,
-          backgroundColor: isDanger ? '#ef4444' : isWarning ? '#f59e0b' : color,
+          width: `${barWidth}%`,
+          backgroundColor: isOver ? '#ef4444' : isClose ? '#f59e0b' : color,
         }}
       />
     </div>

@@ -14,7 +14,7 @@ export function AddExpenseModal({ open, onClose }: AddExpenseModalProps) {
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>Log Expense</DialogTitle>
+          <DialogTitle>Add Expense</DialogTitle>
         </DialogHeader>
         <AddExpenseForm onSuccess={onClose} defaultBucket={defaultBucket} />
       </DialogContent>

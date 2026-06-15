@@ -14,7 +14,7 @@ export function AddExpenseSheet({ open, onClose }: AddExpenseSheetProps) {
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent className="max-h-[92svh] flex flex-col">
         <SheetHeader>
-          <SheetTitle>Log Expense</SheetTitle>
+          <SheetTitle>Add Expense</SheetTitle>
         </SheetHeader>
         <div className="overflow-y-auto p-4 pb-10">
           <AddExpenseForm onSuccess={onClose} defaultBucket={defaultBucket} />

@@ -1,9 +1,8 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCurrency } from '@/hooks/useCurrency'
 import { useProfile } from '@/hooks/useProfile'
-import { ChartTooltip } from './ChartTooltip'
 import type { BucketSummary } from '@/types'
 
 interface DonutSummaryProps {
@@ -49,7 +48,6 @@ export function DonutSummary({ summaries, isLoading }: DonutSummaryProps) {
                   <Cell key={index} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip content={<ChartTooltip />} />
             </PieChart>
           </ResponsiveContainer>
           {/* Center label */}
