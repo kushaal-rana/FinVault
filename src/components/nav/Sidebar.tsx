@@ -92,6 +92,7 @@ export function Sidebar() {
       <Separator className="mb-3" />
       <button
         onClick={toggle}
+        aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
         title={sidebarCollapsed ? (isDark ? 'Light mode' : 'Dark mode') : undefined}
         className={cn(
           'flex items-center rounded-md text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors mb-1',

@@ -10,7 +10,7 @@ import App from './App'
 import './index.css'
 
 function AuthBootstrap({ children }: { children: React.ReactNode }) {
-  const { setSession, setLoading } = useAuthStore()
+  const { setSession } = useAuthStore()
 
   useEffect(() => {
     // Hydrate from cache, then verify with server (getSession is cache-only)
@@ -32,7 +32,7 @@ function AuthBootstrap({ children }: { children: React.ReactNode }) {
     })
 
     return () => subscription.unsubscribe()
-  }, [setSession, setLoading])
+  }, [setSession])
 
   return <>{children}</>
 }

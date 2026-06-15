@@ -8,7 +8,8 @@
       "Read(//usr/local/bin/**)",
       "Read(//opt/homebrew/bin/**)",
       "Bash(npx shadcn-ui@latest init --defaults)",
-      "Bash(npx shadcn@latest init --defaults)"
+      "Bash(npx shadcn@latest init --defaults)",
+      "mcp__claude_ai_Supabase__execute_sql"
     ]
   }
 }

@@ -18,6 +18,7 @@ export function MonthPicker({ month, onChange }: MonthPickerProps) {
         size="icon"
         className="h-8 w-8"
         onClick={() => onChange(getPrevMonth(month))}
+        aria-label="Previous month"
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -30,6 +31,7 @@ export function MonthPicker({ month, onChange }: MonthPickerProps) {
         className="h-8 w-8"
         onClick={() => onChange(getNextMonth(month))}
         disabled={isCurrentMonth}
+        aria-label="Next month"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>
