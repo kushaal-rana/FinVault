@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { getMonthLabel } from '@/lib/utils'
 import { useCurrency } from '@/hooks/useCurrency'
+import { useProfile } from '@/hooks/useProfile'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { BucketSummary } from '@/types'
 
@@ -12,7 +13,11 @@ interface IncomeHeaderProps {
 
 export function IncomeHeader({ month, summaries, isLoading }: IncomeHeaderProps) {
   const { format } = useCurrency()
-  const totalIncome = summaries.reduce((sum, s) => sum + s.allocated, 0)
+  const { data: profile } = useProfile()
+  // Use real monthly income from profile; fall back to sum of allocations if unset
+  const monthlyIncomeUSD = profile?.monthly_income ?? 0
+  const totalAllocated = summaries.reduce((sum, s) => sum + s.allocated, 0)
+  const totalIncome = monthlyIncomeUSD > 0 ? monthlyIncomeUSD : totalAllocated
   const totalSpent = summaries.reduce((sum, s) => sum + s.spent, 0)
   const remaining = totalIncome - totalSpent
   const overallPercent = totalIncome > 0 ? Math.round((totalSpent / totalIncome) * 100) : 0
@@ -27,8 +32,8 @@ export function IncomeHeader({ month, summaries, isLoading }: IncomeHeaderProps)
         <CardContent className="p-5">
           <p className="text-slate-400 text-sm font-medium mb-1">{getMonthLabel(month)}</p>
           <p className="text-slate-300 text-sm">
-            No allocations set for this month.{' '}
-            <span className="text-white font-medium">Go to Settings to set up your buckets.</span>
+            No income or allocations set for this month.{' '}
+            <span className="text-white font-medium">Go to Settings to set your monthly income and buckets.</span>
           </p>
         </CardContent>
       </Card>
